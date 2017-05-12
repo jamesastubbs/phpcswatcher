@@ -1,0 +1,38 @@
+{
+    "name": "jamesastubbs/phpcswatcher",
+    "description": "A listener which automatically invokes PHP_CodeSniffer when a PHP file has been added/modified.",
+    "authors": [
+        {
+            "name": "James Stubbs",
+            "email": "jamesastubbs@me.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "PHPCSWatcher\\": "src/"
+        }
+    },
+    "bin": [
+        "bin/phpcswatcher"
+    ],
+    "keywords": [
+        "events",
+        "listener",
+        "phpcs",
+        "tool",
+        "watcher"
+    ],
+    "license": "MIT",
+    "require": {},
+    "require-dev": {
+        "squizlabs/php_codesniffer": "*",
+        "jasonlewis/resource-watcher": "^1.2",
+        "illuminate/filesystem": "^5.4"
+    },
+    "support": {
+      "issues":     "https://github.com/jamesastubbs/phpcswatcher/issues",
+      "email":      "jamesastubbs@me.com",
+      "source":     "https://github.com/jamesastubbs/phpcswatcher"
+    },
+    "type": "library"
+}

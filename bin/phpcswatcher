@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+
+if (file_exists(dirname(__FILE__) . '/../../../autoload.php')) {
+    require_once dirname(__FILE__) . '/../../../autoload.php';
+}
+
+if (!isset($argv[1])) {
+    echo 'Usage: phpcs_watcher [path]' . PHP_EOL . PHP_EOL;
+    exit(1);
+}
+
+$path = $argv[1];
+
+$watcher = new \PHPCSWatcher\PHPCSWatcher();
+$watcher->watch($path);
