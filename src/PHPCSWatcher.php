@@ -3,11 +3,38 @@
 namespace PHPCSWatcher;
 
 use Illuminate\Filesystem\Filesystem;
+use JasonLewis\ResourceWatcher\Event;
 use JasonLewis\ResourceWatcher\Tracker;
 use JasonLewis\ResourceWatcher\Watcher;
 
+/**
+ * Class  PHPCSWatcher
+ *
+ * A directory listener which automatically invokes PHP_CodeSniffer
+ * when an addition or modification is made to a file.
+ *
+ * @author     James Stubbs <jamesastubbs@me.com>
+ * @license    MIT Licence
+ */
 class PHPCSWatcher
 {
+    /**
+     * @var  array  Pre-formatted status messages for the event codes.
+     */
+    protected static $statuses = [
+        Event::RESOURCE_DELETED => "\033[0;31mDELETED\033[0m",
+        Event::RESOURCE_CREATED => "\033[0;32mCREATED\033[0m",
+        Event::RESOURCE_MODIFIED => "\033[0;33mMODIFIED\033[0m"
+    ];
+
+    /**
+     * Initialises an event listener watching the directory of '$path'.
+     * If a file is added/modified, the 'phpcs' command will automatically be invoked,
+     * checking the provoking file.
+     * If a file is deleted, only a message is logged as we have nothing to check against.
+     *
+     * @param  string  $path  The directory to listen to.
+     */
     public function watch($path)
     {
         $path = $this->resolvePath($path);
@@ -18,12 +45,22 @@ class PHPCSWatcher
         );
 
         $listener = $watcher->watch($path);
-        $listener->anything(function($event, $resource, $path) {
+        $listener->anything(function ($event, $resource, $path) {
             if (preg_match('/.+\.php$/', $path) === 0) {
                 return;
             }
 
-            fwrite(STDOUT, "$path changed:" . PHP_EOL);
+            $code = $event->getCode();
+            $status = self::$statuses[$event->getCode()];
+
+            fwrite(STDOUT, "$status - $path:" . PHP_EOL);
+
+            // stop execution since the file has been deleted and there is nothing to check against.
+            if ($code === Event::RESOURCE_DELETED) {
+                fwrite(STDOUT, PHP_EOL);
+                return;
+            }
+
             passthru(realpath(
                 __DIR__ .
                 '/../../../squizlabs/php_codesniffer/bin'
@@ -35,13 +72,20 @@ class PHPCSWatcher
                 fwrite(STDOUT, "\x07"); // CLI beep.
             }
 
-            fwrite(STDOUT,  PHP_EOL);
+            fwrite(STDOUT, PHP_EOL);
         });
 
-        fwrite(STDOUT, 'Watching...' . PHP_EOL . PHP_EOL);
-        $watcher->start();
+        fwrite(STDOUT, 'Watching for any .php file changes...' . PHP_EOL . PHP_EOL);
+        $watcher->start(); // this will keep the application infinitely running.
     }
 
+    /**
+     * Takes '$path' and appends the current working directory in front of the '$path' value if required.
+     *
+     * @param   string  $path  Directory path to resolve.
+     *
+     * @return  string         The resolved directory.
+     */
     protected function resolvePath($path)
     {
         if (substr($path, 0, 1) !== '/' && substr($path, 0, 1) !== '~') {

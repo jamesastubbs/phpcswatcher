@@ -1,6 +1,11 @@
 #!/usr/bin/env php
 <?php
 
+if (php_sapi_name() !== 'cli') {
+    echo 'This is a command line executable only.';
+    exit(1);
+}
+
 if (file_exists(dirname(__FILE__) . '/../../../autoload.php')) {
     require_once dirname(__FILE__) . '/../../../autoload.php';
 }
