@@ -4,7 +4,7 @@ A listener which automatically invokes PHP_CodeSniffer when a PHP file has been 
 
 -----
 
-## Installation
+## Installation
 
 Please use [Composer](https://getcomposer.org) to download this package:
 
