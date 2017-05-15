@@ -1,6 +1,7 @@
 {
     "name": "jamesastubbs/phpcswatcher",
     "description": "A listener which automatically invokes PHP_CodeSniffer when a PHP file has been added/modified.",
+    "version": "1.0.0",
     "authors": [
         {
             "name": "James Stubbs",
@@ -23,8 +24,7 @@
         "watcher"
     ],
     "license": "MIT",
-    "require": {},
-    "require-dev": {
+    "require": {
         "squizlabs/php_codesniffer": "*",
         "jasonlewis/resource-watcher": "^1.2",
         "illuminate/filesystem": "^5.4"
