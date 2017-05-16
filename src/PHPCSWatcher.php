@@ -28,6 +28,22 @@ class PHPCSWatcher
     ];
 
     /**
+     * @var  string  Directory of the 'phpcs' executable script.
+     */
+    protected $phpcsDir = null;
+
+    public function __construct()
+    {
+        $phpcsDir = realpath(__DIR__ . '/../../../bin');
+
+        if ($phpcsDir === false) {
+            throw new \Exception("Cannot find 'phpcs' executable. Searched in directory: '$phpcsDir'.");
+        }
+
+        $this->phpcsDir = $phpcsDir;
+    }
+
+    /**
      * Initialises an event listener watching the directory of '$path'.
      * If a file is added/modified, the 'phpcs' command will automatically be invoked,
      * checking the provoking file.
@@ -61,10 +77,10 @@ class PHPCSWatcher
                 return;
             }
 
-            passthru(realpath(
-                __DIR__ .
-                '/../../../squizlabs/php_codesniffer/bin'
-            ) . '/phpcs --standard=' . realpath(__DIR__ . '/../') . '/psr2_standard.xml --colors -n ' . $path, $exitCode);
+            passthru(
+                $this->phpcsDir . '/phpcs --standard=' . realpath(__DIR__ . '/../') . '/psr2_standard.xml --colors -n ' . $path,
+                $exitCode
+            );
 
             if ($exitCode === 0) {
                 fwrite(STDOUT, "\033[1;32mFile OK \033[0m \n"); // bold green formatting.
